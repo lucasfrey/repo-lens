@@ -1,0 +1,33 @@
+{
+    "name": "repo-lens",
+    "version": "0.1.0",
+    "description": "Turn any GitHub repo into a clean, readable docs site in seconds.",
+    "type": "module",
+    "bin": {
+        "repo-lens": "./build/cli/index.js"
+    },
+    "scripts": {
+        "dev": "tsx src/cli/index.ts",
+        "build": "tsc",
+        "start": "node build/cli/index.js"
+    },
+    "engines": {
+        "node": ">=18"
+    },
+    "keywords": [
+        "github",
+        "docs",
+        "cli",
+        "repository"
+    ],
+    "license": "MIT",
+    "dependencies": {
+        "minimist": "^1.2.8"
+    },
+    "devDependencies": {
+        "@types/minimist": "^1.2.5",
+        "@types/node": "^25.5.2",
+        "tsx": "^4.21.0",
+        "typescript": "^6.0.2"
+    }
+}

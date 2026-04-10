@@ -1,0 +1,75 @@
+name: Deploy RepoLens Site
+
+on:
+    push:
+        branches: [main]
+    workflow_dispatch:
+        inputs:
+            target_repo:
+                description: "GitHub repo to analyze (owner/repo)"
+                required: true
+                default: ""
+
+# Required for GitHub Pages deployment
+permissions:
+    contents: read
+    pages: write
+    id-token: write
+
+# Only allow one concurrent deployment
+concurrency:
+    group: pages
+    cancel-in-progress: true
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: latest
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "22"
+                  cache: "pnpm"
+
+            - name: Install dependencies
+              run: pnpm install
+
+            - name: Build CLI
+              run: pnpm build
+
+            - name: Generate site
+              run: |
+                  # Use workflow_dispatch input first, then fall back to repository variable
+                  TARGET="${{ github.event.inputs.target_repo || vars.TARGET_REPO }}"
+                  if [ -z "$TARGET" ]; then
+                    echo "Error: No target repo set. Provide one via workflow_dispatch or set the TARGET_REPO repository variable."
+                    exit 1
+                  fi
+                  echo "Generating site for: $TARGET"
+                  pnpm start -- generate "$TARGET" --out ./dist
+              env:
+                  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+            - name: Upload Pages artifact
+              uses: actions/upload-pages-artifact@v3
+              with:
+                  path: ./dist
+
+    deploy:
+        needs: build
+        runs-on: ubuntu-latest
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        steps:
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v4
