@@ -65,20 +65,28 @@ export function analyzeRepo(data: RepoData): RepoInsights {
         ? parsePackageJson(data.packageJson)
         : { scripts: {}, dependencies: { ui: [], state: [], styling: [] } };
 
-    const { filtered, importantFolders } = parseFileTree(data.tree);
+    const { filtered } = parseFileTree(data.tree);
     const filePaths = new Set(filtered.map((f) => f.path));
 
     const entryPoints = ENTRY_POINT_CANDIDATES.filter((p) => filePaths.has(p));
     const projectType = detectProjectType(data.packageJson, [...filePaths]);
 
+    // Resolve relative hero image paths to raw.githubusercontent.com URLs
+    let heroImage = readme.heroImage;
+    if (heroImage && !heroImage.startsWith("http")) {
+        const branch = data.repo.default_branch;
+        const cleanPath = heroImage.replace(/^\.\//, "");
+        heroImage = `https://raw.githubusercontent.com/${data.repo.full_name}/${branch}/${cleanPath}`;
+    }
+
     return {
         repoName: data.repo.full_name,
         description: data.repo.description ?? undefined,
+        avatarUrl: data.repo.owner.avatar_url,
         projectType,
         entryPoints,
-        importantFolders,
         scripts,
         dependencies,
-        readme,
+        readme: { ...readme, heroImage },
     };
 }

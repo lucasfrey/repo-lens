@@ -1,7 +1,31 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { marked } from "marked";
 import type { RepoInsights } from "../types.js";
+
+const CALLOUT_META: Record<string, { label: string; icon: string }> = {
+    NOTE: { label: "Note", icon: "ℹ️" },
+    TIP: { label: "Tip", icon: "💡" },
+    IMPORTANT: { label: "Important", icon: "❗" },
+    WARNING: { label: "Warning", icon: "⚠️" },
+    CAUTION: { label: "Caution", icon: "🔥" },
+};
+
+function transformCallouts(html: string): string {
+    return html.replace(
+        /<blockquote>\n<p>\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\n([\s\S]*?)<\/blockquote>/gi,
+        (_match, type: string, inner: string) => {
+            const meta = CALLOUT_META[type.toUpperCase()];
+            const body = inner.replace(/<\/p>\s*$/, "").trim();
+            return `<div class="callout callout-${type.toLowerCase()}"><p class="callout-label">${meta.icon} ${meta.label}</p><p>${body}</p></div>`;
+        },
+    );
+}
+
+function renderMarkdown(content: string): string {
+    return transformCallouts(marked(content) as string);
+}
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // In dev (tsx): __dirname is src/generator. In build: build/generator.
@@ -114,14 +138,6 @@ export function buildSite(
         .filter(Boolean)
         .join("\n              ");
 
-    const importantFolders = insights.importantFolders
-        .map((f) =>
-            li(
-                `<code>${escapeHtml(f.name)}/</code><span class="score">score: ${f.score}</span>`,
-            ),
-        )
-        .join("\n              ");
-
     const dependencies = [
         insights.dependencies.ui.length
             ? li(
@@ -144,15 +160,28 @@ export function buildSite(
 
     const slots: Record<string, string> = {
         "{{REPO_NAME}}": escapeHtml(insights.repoName),
+        "{{REPO_OWNER}}": escapeHtml(insights.repoName.split("/")[0]),
+        "{{REPO_OWNER_URL}}": `https://github.com/${insights.repoName.split("/")[0]}`,
+        "{{REPO_SHORT_NAME}}": escapeHtml(
+            insights.repoName.split("/")[1] ?? insights.repoName,
+        ),
+        "{{REPO_URL}}": `https://github.com/${insights.repoName}`,
+        "{{AVATAR_IMG}}": insights.avatarUrl
+            ? `<img class="repo-avatar" src="${insights.avatarUrl}" alt="${escapeHtml(insights.repoName)} avatar" />`
+            : "",
+        "{{HERO_IMAGE}}": insights.readme.heroImage
+            ? `<img class="hero-img" src="${insights.readme.heroImage}" alt="${escapeHtml(insights.readme.title ?? insights.repoName)} logo" />`
+            : "",
         "{{DESCRIPTION}}": renderInlineMarkdown(insights.description ?? ""),
         "{{PROJECT_TYPE}}": escapeHtml(insights.projectType),
         "{{README_TITLE}}": escapeHtml(
             insights.readme.title ?? insights.repoName,
         ),
         "{{README_INTRO}}": renderInlineMarkdown(insights.readme.intro ?? ""),
-        "{{README_INSTALL}}": insights.readme.install ?? "",
+        "{{README_INSTALL}}": insights.readme.install
+            ? renderMarkdown(insights.readme.install)
+            : "",
         "{{SCRIPTS}}": scripts,
-        "{{IMPORTANT_FOLDERS}}": importantFolders,
         "{{DEPENDENCIES}}": dependencies,
     };
 
@@ -161,9 +190,24 @@ export function buildSite(
         html = html.replaceAll(slot, value);
     }
 
-    fs.mkdirSync(outDir, { recursive: true });
-    const outFile = path.join(outDir, "index.html");
+    // Generated repo output goes in dist/preview/
+    const previewDir = path.join(outDir, "preview");
+    fs.mkdirSync(previewDir, { recursive: true });
+    const outFile = path.join(previewDir, "index.html");
     fs.writeFileSync(outFile, html, "utf-8");
-    fs.copyFileSync(CSS_PATH, path.join(outDir, "style.css"));
+    fs.copyFileSync(CSS_PATH, path.join(previewDir, "style.css"));
+
+    // Landing page becomes dist/index.html
+    const LANDING_DIR = path.resolve(__dirname, "../../src/landing");
+    const landingHtml = path.join(LANDING_DIR, "index.html");
+    const landingCss = path.join(LANDING_DIR, "style.css");
+    fs.mkdirSync(outDir, { recursive: true });
+    if (fs.existsSync(landingHtml)) {
+        fs.copyFileSync(landingHtml, path.join(outDir, "index.html"));
+    }
+    if (fs.existsSync(landingCss)) {
+        fs.copyFileSync(landingCss, path.join(outDir, "landing.css"));
+    }
+
     console.log(`✓ Site generated → ${outFile}`);
 }

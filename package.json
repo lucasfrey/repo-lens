@@ -22,9 +22,11 @@
     ],
     "license": "MIT",
     "dependencies": {
+        "marked": "^18.0.0",
         "minimist": "^1.2.8"
     },
     "devDependencies": {
+        "@types/marked": "^6.0.0",
         "@types/minimist": "^1.2.5",
         "@types/node": "^25.5.2",
         "tsx": "^4.21.0",

@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>RepoLens — Turn any GitHub repo into a docs site</title>
+        <meta
+            name="description"
+            content="RepoLens turns any GitHub repository into a clean, readable documentation site in seconds. No config, no AI — just smart heuristics."
+        />
+        <link rel="stylesheet" href="landing.css" />
+    </head>
+    <body>
+        <!-- Nav -->
+        <nav>
+            <div class="container nav-inner">
+                <span class="nav-logo">RepoLens</span>
+                <div class="nav-links">
+                    <a href="#how-it-works">How it works</a>
+                    <a href="#features">Features</a>
+                    <a
+                        href="https://github.com/lucasfrey/repo-lens"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="btn btn-secondary"
+                        >GitHub</a
+                    >
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero -->
+        <section class="hero">
+            <div class="container hero-inner">
+                <div class="hero-badge">Open Source · Free CLI</div>
+                <h1>
+                    Turn any GitHub repo into a<br />
+                    <span class="accent">clean docs site</span> in seconds
+                </h1>
+                <p class="hero-sub">
+                    Stop staring at raw code. RepoLens analyses any public
+                    repository — scripts, dependencies, README, structure — and
+                    generates a beautiful static site you can understand in 2
+                    minutes.
+                </p>
+
+                <div class="quickstart">
+                    <div class="quickstart-label">Get started instantly</div>
+                    <div class="code-block">
+                        <code id="qs-cmd"
+                            >npx repo-lens generate storybookjs/storybook</code
+                        >
+                        <button
+                            class="copy-btn"
+                            aria-label="Copy command"
+                            onclick="copyCommand()"
+                        >
+                            <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 16 16"
+                                fill="currentColor"
+                            >
+                                <path
+                                    d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"
+                                />
+                                <path
+                                    d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"
+                                />
+                            </svg>
+                            <span id="copy-label">Copy</span>
+                        </button>
+                    </div>
+                    <p class="quickstart-hint">
+                        Replace <code>storybookjs/storybook</code> with any
+                        public GitHub repo. Output lands in <code>./dist</code>.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demo preview -->
+        <section class="preview-section">
+            <div class="container">
+                <p class="section-eyebrow">Live example</p>
+                <h2>What you get</h2>
+                <p class="section-sub">
+                    Running
+                    <code>repo-lens generate storybookjs/storybook</code>
+                    produces this:
+                </p>
+                <div class="browser-frame">
+                    <div class="browser-chrome">
+                        <div class="browser-dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                        <div class="browser-url">preview/index.html</div>
+                    </div>
+                    <iframe
+                        src="preview/index.html"
+                        title="RepoLens output preview"
+                        loading="lazy"
+                        scrolling="no"
+                    ></iframe>
+                </div>
+            </div>
+        </section>
+
+        <!-- How it works -->
+        <section id="how-it-works" class="section-alt">
+            <div class="container">
+                <p class="section-eyebrow">Under the hood</p>
+                <h2>How it works</h2>
+                <ol class="steps">
+                    <li class="step">
+                        <div class="step-num">1</div>
+                        <div>
+                            <strong>Fetch</strong>
+                            <p>
+                                Pulls the repo tree, README, and
+                                <code>package.json</code> via the GitHub API. No
+                                cloning required.
+                            </p>
+                        </div>
+                    </li>
+                    <li class="step">
+                        <div class="step-num">2</div>
+                        <div>
+                            <strong>Analyse</strong>
+                            <p>
+                                Heuristics detect project type, entry points,
+                                key scripts, dependencies, and the install
+                                instructions — no AI, no guessing.
+                            </p>
+                        </div>
+                    </li>
+                    <li class="step">
+                        <div class="step-num">3</div>
+                        <div>
+                            <strong>Generate</strong>
+                            <p>
+                                A clean static <code>index.html</code> + CSS is
+                                written to <code>./dist</code>. Deploy anywhere
+                                — GitHub Pages, Netlify, or just open it
+                                locally.
+                            </p>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section id="features" class="section">
+            <div class="container">
+                <p class="section-eyebrow">What's included</p>
+                <h2>Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Instant output</h3>
+                        <p>
+                            One command. No config files, no setup, no API keys
+                            for public repos.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔍</div>
+                        <h3>Smart heuristics</h3>
+                        <p>
+                            Detects Next.js, React, Vue, Go, Python and more
+                            from files and deps — not guesswork.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📄</div>
+                        <h3>README-first</h3>
+                        <p>
+                            Hero images, install instructions, and intros are
+                            pulled directly from the README.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🌙</div>
+                        <h3>Dark mode</h3>
+                        <p>
+                            Generated sites respect the visitor's system
+                            preference automatically.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🚀</div>
+                        <h3>GitHub Pages ready</h3>
+                        <p>
+                            A workflow is included to auto-deploy on every push
+                            via GitHub Actions.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎨</div>
+                        <h3>Custom templates</h3>
+                        <p>
+                            Pass <code>--template ./my-template</code> to use
+                            your own HTML/CSS layout.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="cta-section">
+            <div class="container cta-inner">
+                <h2>Ready to understand any codebase?</h2>
+                <p>
+                    RepoLens is open source and free. Give it a repo and see
+                    what comes out.
+                </p>
+                <div class="cta-actions">
+                    <div class="code-block cta-code">
+                        <code>npx repo-lens generate &lt;owner/repo&gt;</code>
+                        <button
+                            class="copy-btn"
+                            aria-label="Copy command"
+                            onclick="copyCta()"
+                        >
+                            <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 16 16"
+                                fill="currentColor"
+                            >
+                                <path
+                                    d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"
+                                />
+                                <path
+                                    d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"
+                                />
+                            </svg>
+                            <span id="cta-copy-label">Copy</span>
+                        </button>
+                    </div>
+                    <a
+                        href="https://github.com/lucasfrey/repo-lens"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="btn btn-primary"
+                        >View on GitHub</a
+                    >
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="container footer-inner">
+                <span class="nav-logo">RepoLens</span>
+                <span class="footer-copy"
+                    >MIT License ·
+                    <a
+                        href="https://github.com/lucasfrey/repo-lens"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >GitHub</a
+                    ></span
+                >
+            </div>
+        </footer>
+
+        <script>
+            function copyCommand() {
+                const cmd = document.getElementById("qs-cmd").textContent;
+                navigator.clipboard.writeText(cmd).then(() => {
+                    const label = document.getElementById("copy-label");
+                    label.textContent = "Copied!";
+                    setTimeout(() => (label.textContent = "Copy"), 2000);
+                });
+            }
+            function copyCta() {
+                navigator.clipboard
+                    .writeText("npx repo-lens generate <owner/repo>")
+                    .then(() => {
+                        const label = document.getElementById("cta-copy-label");
+                        label.textContent = "Copied!";
+                        setTimeout(() => (label.textContent = "Copy"), 2000);
+                    });
+            }
+        </script>
+    </body>
+</html>

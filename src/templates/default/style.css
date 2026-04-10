@@ -66,10 +66,13 @@ header {
 header .container {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 8px;
 }
 
 .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-size: 20px;
     font-weight: 700;
     color: var(--accent);
@@ -86,6 +89,28 @@ header .container {
     font-size: 18px;
     font-weight: 600;
     color: var(--text);
+    text-decoration: none;
+}
+
+.repo-name:hover {
+    color: var(--accent);
+}
+
+.repo-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border);
+}
+
+.hero-img {
+    display: block;
+    max-height: 80px;
+    max-width: 240px;
+    width: auto;
+    object-fit: contain;
+    margin-bottom: 16px;
 }
 
 .badge {
@@ -120,8 +145,19 @@ main {
     background: var(--bg-secondary);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 20px;
     box-shadow: var(--shadow);
+    overflow: hidden;
+    transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease,
+        transform 0.18s ease;
+}
+
+.card:hover {
+    border-color: var(--accent);
+    box-shadow:
+        var(--shadow),
+        0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
 .card.full-width {
@@ -143,6 +179,7 @@ details > summary::-webkit-details-marker {
     align-items: center;
     justify-content: space-between;
     gap: 8px;
+    padding: 20px;
 }
 
 .card-title {
@@ -164,7 +201,7 @@ details[open] .toggle-icon {
 }
 
 .card-body {
-    margin-top: 12px;
+    padding: 0 20px 20px;
     overflow: hidden;
     transition:
         max-height 0.28s ease,
@@ -172,6 +209,9 @@ details[open] .toggle-icon {
 }
 
 h1.repo-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-size: 28px;
     font-weight: 700;
     letter-spacing: -0.5px;
@@ -237,6 +277,76 @@ pre {
         "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
     white-space: pre-wrap;
     word-break: break-word;
+}
+
+/* Markdown rendered content (e.g. install block) */
+#install-block p {
+    margin: 0 0 10px;
+}
+#install-block p:last-child {
+    margin-bottom: 0;
+}
+#install-block ul,
+#install-block ol {
+    padding-left: 20px;
+    margin: 0 0 10px;
+}
+#install-block li {
+    margin: 4px 0;
+}
+#install-block code {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 12px;
+    font-family:
+        "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+#install-block pre {
+    margin: 8px 0;
+}
+#install-block pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 13px;
+}
+
+/* GitHub-style callouts */
+.callout {
+    border-left: 4px solid;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 10px 14px;
+    margin: 10px 0;
+    font-size: 14px;
+}
+.callout p {
+    margin: 0;
+}
+.callout-label {
+    font-weight: 700;
+    margin-bottom: 4px !important;
+}
+.callout-note {
+    border-color: #0969da;
+    background: color-mix(in srgb, #0969da 8%, transparent);
+}
+.callout-tip {
+    border-color: #1a7f37;
+    background: color-mix(in srgb, #1a7f37 8%, transparent);
+}
+.callout-important {
+    border-color: #8250df;
+    background: color-mix(in srgb, #8250df 8%, transparent);
+}
+.callout-warning {
+    border-color: #bf8700;
+    background: color-mix(in srgb, #bf8700 8%, transparent);
+}
+.callout-caution {
+    border-color: #cf222e;
+    background: color-mix(in srgb, #cf222e 8%, transparent);
 }
 
 img.badge {

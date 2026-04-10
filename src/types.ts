@@ -1,9 +1,9 @@
 export type RepoInsights = {
     repoName: string;
     description?: string;
+    avatarUrl?: string;
     projectType: string;
     entryPoints: string[];
-    importantFolders: { name: string; score: number }[];
     scripts: {
         dev?: string;
         build?: string;
@@ -18,5 +18,6 @@ export type RepoInsights = {
         title?: string;
         intro?: string;
         install?: string;
+        heroImage?: string;
     };
 };

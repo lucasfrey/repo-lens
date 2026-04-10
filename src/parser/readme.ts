@@ -2,10 +2,54 @@ export type ReadmeInfo = {
     title?: string;
     intro?: string;
     install?: string;
+    heroImage?: string;
 };
+
+const BADGE_DOMAINS = [
+    "shields.io",
+    "badgen.net",
+    "codecov.io",
+    "circleci.com",
+    "travis-ci",
+    "snyk.io",
+    "sonarcloud.io",
+    "coveralls.io",
+    "badge.fury.io",
+    "david-dm.org",
+    "github.com/workflow/badge",
+    "github.com/actions/workflow",
+    "github.com/badges",
+];
+
+function isBadgeUrl(url: string): boolean {
+    return BADGE_DOMAINS.some((d) => url.includes(d));
+}
+
+/** Extracts the src/url from the first non-badge image in a README line. */
+function extractImageUrl(line: string): string | undefined {
+    // HTML <img src="..."> or <img src='...'>
+    const imgTag = /<img[^>]+src=["']([^"']+)["']/i.exec(line);
+    if (imgTag?.[1] && !isBadgeUrl(imgTag[1])) return imgTag[1];
+
+    // Markdown ![alt](url)
+    const mdImg = /!\[[^\]]*\]\(([^)\s]+)\)/.exec(line);
+    if (mdImg?.[1] && !isBadgeUrl(mdImg[1])) return mdImg[1];
+
+    return undefined;
+}
 
 export function parseReadme(content: string): ReadmeInfo {
     const lines = content.split("\n");
+
+    // Hero image: first non-badge image within the first 30 lines
+    let heroImage: string | undefined;
+    for (const line of lines.slice(0, 30)) {
+        const url = extractImageUrl(line);
+        if (url) {
+            heroImage = url;
+            break;
+        }
+    }
 
     // Title: first # heading
     const titleLine = lines.find((l) => /^#\s+/.test(l));
@@ -48,5 +92,5 @@ export function parseReadme(content: string): ReadmeInfo {
         }
     }
 
-    return { title, intro, install };
+    return { title, intro, install, heroImage };
 }

@@ -9,6 +9,10 @@ export type GitHubRepo = {
     full_name: string;
     description: string | null;
     default_branch: string;
+    owner: {
+        login: string;
+        avatar_url: string;
+    };
 };
 
 export type RepoData = {
