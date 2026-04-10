@@ -47,8 +47,8 @@ jobs:
 
             - name: Generate site
               run: |
-                  # Use workflow_dispatch input first, then fall back to repository variable
-                  TARGET="${{ github.event.inputs.target_repo || vars.TARGET_REPO }}"
+                  # Use workflow_dispatch input first, then repository variable, then hardcoded default
+                  TARGET="${{ github.event.inputs.target_repo || vars.TARGET_REPO || 'storybookjs/storybook' }}"
                   if [ -z "$TARGET" ]; then
                     echo "Error: No target repo set. Provide one via workflow_dispatch or set the TARGET_REPO repository variable."
                     exit 1
