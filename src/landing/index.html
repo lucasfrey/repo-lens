@@ -9,6 +9,8 @@
             content="RepoLens turns any GitHub repository into a clean, readable documentation site in seconds. No config, no AI — just smart heuristics."
         />
         <link rel="stylesheet" href="landing.css" />
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
     </head>
     <body>
         <!-- Nav -->
@@ -45,7 +47,46 @@
                 </p>
 
                 <div class="quickstart">
-                    <div class="quickstart-label">Get started instantly</div>
+                    <div class="quickstart-label">Try it in the browser</div>
+                    <div class="try-form">
+                        <div class="try-input-row">
+                            <input
+                                id="repo-input"
+                                type="text"
+                                placeholder="storybookjs/storybook or GitHub URL"
+                                autocomplete="off"
+                                spellcheck="false"
+                            />
+                            <button
+                                id="generate-btn"
+                                class="btn btn-primary"
+                                onclick="handleGenerate()"
+                            >
+                                Generate &amp; Download
+                            </button>
+                        </div>
+                        <details class="token-details">
+                            <summary>
+                                Optional: GitHub token (higher rate limit)
+                            </summary>
+                            <input
+                                id="token-input"
+                                type="password"
+                                placeholder="ghp_…"
+                                autocomplete="off"
+                            />
+                            <p class="token-hint">
+                                Used only in this browser session, never stored
+                                or sent anywhere except GitHub's API.
+                            </p>
+                        </details>
+                        <div
+                            id="generate-status"
+                            class="generate-status"
+                            hidden
+                        ></div>
+                    </div>
+                    <div class="quickstart-divider">or use the CLI</div>
                     <div class="code-block">
                         <code id="qs-cmd"
                             >npx repo-lens generate storybookjs/storybook</code
@@ -267,6 +308,7 @@
             </div>
         </footer>
 
+        <script src="generator.js"></script>
         <script>
             function copyCommand() {
                 const cmd = document.getElementById("qs-cmd").textContent;
@@ -285,6 +327,47 @@
                         setTimeout(() => (label.textContent = "Copy"), 2000);
                     });
             }
+
+            async function handleGenerate() {
+                const input = document
+                    .getElementById("repo-input")
+                    .value.trim();
+                const token =
+                    document.getElementById("token-input")?.value.trim() ||
+                    undefined;
+                const btn = document.getElementById("generate-btn");
+                const status = document.getElementById("generate-status");
+
+                if (!input) {
+                    status.textContent = "Please enter a GitHub repo.";
+                    status.className = "generate-status error";
+                    status.hidden = false;
+                    return;
+                }
+
+                btn.disabled = true;
+                status.className = "generate-status loading";
+                status.hidden = false;
+
+                try {
+                    const repoName = await generate(input, token, (msg) => {
+                        status.textContent = msg;
+                    });
+                    status.textContent = `✓ ${repoName} — zip downloaded!`;
+                    status.className = "generate-status success";
+                } catch (err) {
+                    status.textContent = `Error: ${err.message}`;
+                    status.className = "generate-status error";
+                } finally {
+                    btn.disabled = false;
+                }
+            }
+
+            document
+                .getElementById("repo-input")
+                ?.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter") handleGenerate();
+                });
         </script>
     </body>
 </html>

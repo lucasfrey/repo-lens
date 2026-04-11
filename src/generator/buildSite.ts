@@ -201,12 +201,34 @@ export function buildSite(
     const LANDING_DIR = path.resolve(__dirname, "../../src/landing");
     const landingHtml = path.join(LANDING_DIR, "index.html");
     const landingCss = path.join(LANDING_DIR, "style.css");
+    const landingJs = path.join(LANDING_DIR, "generator.js");
     fs.mkdirSync(outDir, { recursive: true });
     if (fs.existsSync(landingHtml)) {
         fs.copyFileSync(landingHtml, path.join(outDir, "index.html"));
     }
     if (fs.existsSync(landingCss)) {
         fs.copyFileSync(landingCss, path.join(outDir, "landing.css"));
+    }
+    if (fs.existsSync(landingJs)) {
+        // Embed template files into generator.js so it works standalone in the browser
+        const templateHtmlEscaped = templateHtml
+            .replace(/\\/g, "\\\\")
+            .replace(/`/g, "\\`")
+            .replace(/\$\{/g, "\\${");
+        const templateCss = fs.readFileSync(CSS_PATH, "utf-8");
+        const templateCssEscaped = templateCss
+            .replace(/\\/g, "\\\\")
+            .replace(/`/g, "\\`")
+            .replace(/\$\{/g, "\\${");
+        let generatorJs = fs.readFileSync(landingJs, "utf-8");
+        generatorJs = generatorJs
+            .replace("__TEMPLATE_HTML__", templateHtmlEscaped)
+            .replace("__TEMPLATE_CSS__", templateCssEscaped);
+        fs.writeFileSync(
+            path.join(outDir, "generator.js"),
+            generatorJs,
+            "utf-8",
+        );
     }
 
     console.log(`✓ Site generated → ${outFile}`);
